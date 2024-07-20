@@ -44,31 +44,10 @@ Create an API-Key and save it for later use. You have to adde the API-Key later 
 ![Login Screen](https://github.com/nDenerserve/SmartPi/blob/master/img/influx04.jpg?raw=true)
 
 ##### Update packet list and update packages
-    
-    wget -q -O - https://packages.grafana.com/gpg.key | gpg --dearmor | sudo tee -a /etc/apt/trusted.gpg.d/grafana-archive_compat.gpg && clear
-    echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
-
-    sudo apt update
-    sudo apt upgrade
-
 
 ##### Install additional packages
 
-    sudo apt-get install -y grafana sqlite3 libpam0g i2c-tools watchdog
-    sudo systemctl start grafana-server
-
-Check if grafana is running
-
-    sudo systemctl status grafana-server
-
-
-##### Install nodered
-
-    bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
-
-    sudo systemctl enable nodered
-    sudo systemctl start nodered
-
+    sudo apt-get install -y sqlite3 libpam0g i2c-tools watchdog
 
 ##### Create tmpfs in /etc/fstab
 
