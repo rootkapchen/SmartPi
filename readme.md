@@ -11,9 +11,11 @@ https://forum.enerserve.eu
 The easiest way is to download a prebuild image.
 Further information under: https://www.enerserve.eu/service.html
 
-Download Raspbian Bullseye Lite (64bit) (the big bullsyeye should also work) from https://www.raspberrypi.com/software/ and copy it on your SD card. The easiest way is to use the Raspbbery Pi Imager.
+Download actual RaspbiOS Lite (64bit) (the . The easiest way is to use the Raspbbery Pi Imager.
 
 Create a user with the name smartpi and a password of your choice. We use the password smart4pi here. During installation, please use the password you have chosen and replace smart4pi with the one you have chosen.
+
+run your raspi and run sudo apt update -y|apt upgrad -y
 
 ##### Install InfluxDB 2
 
@@ -314,3 +316,8 @@ Or you can add it later via webgui:
  ### 06/19/23
  * added support for SMA energy meter (test)
  * SmartPi can replace the SMA energy meter
+
+ ### 06/19/23 (Peter)
+ * remove support for SMA energy meter (test)
+ * remove modbus-server
+ * remove Grafana
