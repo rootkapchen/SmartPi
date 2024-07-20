@@ -117,33 +117,12 @@ type Config struct {
 	MQTTtopic        string
 	MQTTQoS          uint8
 
-	// [modbus slave]
-	ModbusRTUenabled bool
-	ModbusTCPenabled bool
-	ModbusRTUAddress uint8
-	ModbusRTUDevice  string
-	ModbusTCPAddress string
-
-	// [mobile]
-	MobileEnabled bool
-	MobileAPN     string
-	MobilePIN     string
-	MobileUser    string
-	MobilePass    string
-
 	// [calibration]
 	CalibrationfactorI map[models.Phase]float64
 	CalibrationfactorU map[models.Phase]float64
 
 	// [GUI]
 	GUIMaxCurrent map[models.Phase]int
-
-	// [emeter]
-	EmeterEnabled          bool
-	EmeterMulticastAddress string
-	EmeterMulticastPort    int
-	EmeterSusyID           uint16
-	EmeterSerial           []byte
 }
 
 var cfg *ini.File
@@ -291,21 +270,6 @@ func (p *Config) ReadParameterFromFile() {
 	p.MQTTpass = cfg.Section("mqtt").Key("mqtt_password").String()
 	p.MQTTtopic = cfg.Section("mqtt").Key("mqtt_topic").String()
 	p.MQTTQoS = uint8(cfg.Section("mqtt").Key("mqtt_qos").MustUint(0))
-
-	// [modbus slave]
-	p.ModbusRTUenabled = cfg.Section("modbus").Key("modbus_rtu_enabled").MustBool(false)
-	p.ModbusTCPenabled = cfg.Section("modbus").Key("modbus_tcp_enabled").MustBool(false)
-	p.ModbusRTUAddress = uint8(cfg.Section("modbus").Key("modbus_rtu_address").MustInt(1))
-	p.ModbusRTUDevice = cfg.Section("modbus").Key("modbus_rtu_device_id").MustString("/dev/serial0")
-	p.ModbusTCPAddress = cfg.Section("modbus").Key("modbus_tcp_address").MustString(":502")
-
-	// [mobile]
-	p.MobileEnabled = cfg.Section("umts").Key("umts").MustBool(false)
-	p.MobileAPN = cfg.Section("umts").Key("umts_apn").String()
-	p.MobilePIN = cfg.Section("umts").Key("umts_pin").String()
-	p.MobileUser = cfg.Section("umts").Key("umts_username").String()
-	p.MobilePass = cfg.Section("umts").Key("umts_password").String()
-
 	// [calibration]
 	p.CalibrationfactorI = make(map[models.Phase]float64)
 	p.CalibrationfactorI[models.PhaseA] = cfg.Section("calibration").Key("calibrationfactorI_1").MustFloat64(1)
@@ -323,45 +287,6 @@ func (p *Config) ReadParameterFromFile() {
 	p.GUIMaxCurrent[models.PhaseB] = cfg.Section("gui").Key("gui_max_current_2").MustInt(100)
 	p.GUIMaxCurrent[models.PhaseC] = cfg.Section("gui").Key("gui_max_current_3").MustInt(100)
 	p.GUIMaxCurrent[models.PhaseN] = cfg.Section("gui").Key("gui_max_current_4").MustInt(100)
-
-	// [emeter]
-	p.EmeterEnabled = cfg.Section("emeter").Key("emeter_enabled").MustBool(true)
-	p.EmeterMulticastAddress = cfg.Section("emeter").Key("emeter_multicast_address").MustString("239.12.255.254")
-	p.EmeterMulticastPort = cfg.Section("emeter").Key("emeter_multicast_port").MustInt(9522)
-	p.EmeterSusyID = uint16(cfg.Section("emeter").Key("emeter_susy_id").MustUint(270))
-	serialbytes, err := hex.DecodeString(serial[len(serial)-8:])
-	if err != nil {
-
-		log.Error(err)
-		rand.Seed(time.Now().UnixNano())
-
-		serialbytes := make([]byte, 4)
-		binary.BigEndian.PutUint32(serialbytes, uint32(cfg.Section("emeter").Key("emeter_susy_id").MustUint(uint(rand.Uint32()))))
-		_, err = cfg.Section("emeter").NewKey("emeter_serial", strconv.FormatUint(uint64(binary.BigEndian.Uint32(serialbytes)), 10))
-		tmpFile := "/tmp/smartpi"
-		err := cfg.SaveTo(tmpFile)
-		if err != nil {
-			panic(err)
-		}
-
-		srcFile, err := os.Open(tmpFile)
-		utils.Checklog(err)
-		defer srcFile.Close()
-
-		destFile, err := os.Create("/etc/smartpi") // creates if file doesn't exist
-		utils.Checklog(err)
-		defer destFile.Close()
-
-		_, err = io.Copy(destFile, srcFile)
-		utils.Checklog(err)
-
-		err = destFile.Sync()
-		utils.Checklog(err)
-
-		defer os.Remove(tmpFile)
-
-	}
-	p.EmeterSerial = serialbytes
 
 }
 
@@ -460,20 +385,6 @@ func (p *Config) SaveParameterToFile() {
 	_, err = cfg.Section("mqtt").NewKey("mqtt_topic", p.MQTTtopic)
 	_, err = cfg.Section("mqtt").NewKey("mqtt_qos", strconv.FormatUint(uint64(p.MQTTQoS), 10))
 
-	// [modbus slave]
-	_, err = cfg.Section("modbus").NewKey("modbus_rtu_enabled", strconv.FormatBool(p.ModbusRTUenabled))
-	_, err = cfg.Section("modbus").NewKey("modbus_tcp_enabled", strconv.FormatBool(p.ModbusTCPenabled))
-	_, err = cfg.Section("modbus").NewKey("modbus_rtu_address", strconv.FormatUint(uint64(p.ModbusRTUAddress), 10))
-	_, err = cfg.Section("modbus").NewKey("modbus_rtu_device_id", p.ModbusRTUDevice)
-	_, err = cfg.Section("modbus").NewKey("modbus_tcp_address", p.ModbusTCPAddress)
-
-	// [mobile]
-	_, err = cfg.Section("umts").NewKey("umts", strconv.FormatBool(p.MobileEnabled))
-	_, err = cfg.Section("umts").NewKey("umts_apn", p.MobileAPN)
-	_, err = cfg.Section("umts").NewKey("umts_pin", p.MobilePIN)
-	_, err = cfg.Section("umts").NewKey("umts_username", p.MobileUser)
-	_, err = cfg.Section("umts").NewKey("umts_password", p.MobilePass)
-
 	// [calibration]
 	_, err = cfg.Section("device").NewKey("calibrationfactorI_1", strconv.FormatFloat(p.CalibrationfactorI[models.PhaseA], 'f', -1, 64))
 	_, err = cfg.Section("device").NewKey("calibrationfactorI_2", strconv.FormatFloat(p.CalibrationfactorI[models.PhaseB], 'f', -1, 64))
@@ -487,13 +398,6 @@ func (p *Config) SaveParameterToFile() {
 	_, err = cfg.Section("gui").NewKey("gui_max_current_2", strconv.FormatInt(int64(p.GUIMaxCurrent[models.PhaseB]), 10))
 	_, err = cfg.Section("gui").NewKey("gui_max_current_3", strconv.FormatInt(int64(p.GUIMaxCurrent[models.PhaseC]), 10))
 	_, err = cfg.Section("gui").NewKey("gui_max_current_4", strconv.FormatInt(int64(p.GUIMaxCurrent[models.PhaseN]), 10))
-
-	// [emeter]
-	_, err = cfg.Section("emeter").NewKey("emeter_enabled", strconv.FormatBool(p.EmeterEnabled))
-	_, err = cfg.Section("emeter").NewKey("emeter_multicast_address", p.EmeterMulticastAddress)
-	_, err = cfg.Section("emeter").NewKey("emeter_multicast_port", strconv.FormatInt(int64(p.EmeterMulticastPort), 10))
-	_, err = cfg.Section("emeter").NewKey("emeter_susy_id", strconv.FormatUint(uint64(p.EmeterSusyID), 10))
-	_, err = cfg.Section("emeter").NewKey("emeter_serial", strconv.FormatUint(uint64(binary.BigEndian.Uint32(p.EmeterSerial)), 10))
 
 	tmpFile := "/tmp/smartpi"
 	err := cfg.SaveTo(tmpFile)
