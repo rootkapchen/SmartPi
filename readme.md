@@ -5,13 +5,14 @@
 [SmartPi open source](http://www.enerserve.eu.eu/products/smartpi).
 
 ## Forum
-https://forum.enerserve.eu
+ (https://forum.enerserve.eu)???
+https://web.archive.org/web/20201230142840/https://forum.enerserve.eu/archive/index.php?forum-1.html
 
 ## Installation
 The easiest way is to download a prebuild image.
 Further information under: https://www.enerserve.eu/service.html
 
-Download actual RaspbiOS Lite (64bit) (the . The easiest way is to use the Raspbbery Pi Imager.
+Download actual RaspbiOS Lite (64bit) and install it on your SD-card. The easiest way is to use the Raspbbery Pi Imager.
 
 Create a user with the name smartpi and a password of your choice. We use the password smart4pi here. During installation, please use the password you have chosen and replace smart4pi with the one you have chosen.
 
@@ -33,6 +34,7 @@ Check if influxdb is running
     sudo systemctl status influxdb
 
 ###### Create InfluxDB user and tables
+
 Go to http://<<ip-address of smartpi>>:8086
 ![Login Screen](https://github.com/nDenerserve/SmartPi/blob/master/img/influx01.jpg?raw=true)
 
@@ -45,7 +47,6 @@ Login and add an addition Bucket called **fastmeasurement**
 Create an API-Key and save it for later use. You have to adde the API-Key later in the SmartPiconfiguration
 ![Login Screen](https://github.com/nDenerserve/SmartPi/blob/master/img/influx04.jpg?raw=true)
 
-##### Update packet list and update packages
 
 ##### Install additional packages
 
@@ -62,41 +63,7 @@ For secure 24/7 operation, we recommend that you also create a tmpf for the log 
     echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777,size=20M 0 0" | sudo tee -a /etc/fstab
     
 If you want to compile yourself, increase the value for tmp to 200M.
-    
-
-##### Optimize the logfile (for bullseye):
-
-    sudo nano /etc/logrotate.d/rsyslog
-
-And add size 10M and change from weekly to daily.
-The file looks like:
-                                                                                                                                                                                                                                                
-    /var/log/syslog
-    /var/log/mail.info
-    /var/log/mail.warn
-    /var/log/mail.err
-    /var/log/mail.log
-    /var/log/daemon.log
-    /var/log/kern.log
-    /var/log/auth.log
-    /var/log/user.log
-    /var/log/lpr.log
-    /var/log/cron.log
-    /var/log/debug
-    /var/log/messages
-    {
-            rotate 4
-            size 10M
-            daily
-            missingok
-            notifempty
-            compress
-            delaycompress
-            sharedscripts
-            postrotate
-                    /usr/lib/rsyslog/rsyslog-rotate
-            endscript
-    }
+   
 
 ##### Optimize the logfile (for bookworm):
 
@@ -237,21 +204,6 @@ to write the time to the RTC and
 
 to read the time from the RTC.
 
-##### If you would like to use our RS485- or Lora-Module:
-Open
-
-    sudo nano /boot/config.txt
-and add:
-
-    dtoverlay=sc16is752-i2c,int_pin=24,addr=0x4D,xtal=14745600
-
-    
-
-##### Remove old go version
-
-    sudo apt-get remove golang
-    sudo apt-get autoremove
-
 
 ##### Install go
 Download the archive and extract it into /usr/local, creating a Go tree in /usr/local/go.
@@ -318,6 +270,6 @@ Or you can add it later via webgui:
  * SmartPi can replace the SMA energy meter
 
  ### 06/19/23 (Peter)
- * remove support for SMA energy meter (test)
+ * remove support for SMA energy meter
  * remove modbus-server
- * remove Grafana
+ * remove Grafana install
