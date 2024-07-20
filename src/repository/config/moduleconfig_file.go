@@ -25,14 +25,6 @@ type Moduleconfig struct {
 	// [digitalout]
 	AllowedDigitalOutUser []string
 
-	// [etemperature]
-	AllowedEtemperatureUser       []string
-	EtemperatureI2CAddress        uint16
-	EtemperatureSamplerate        int
-	EtemperatureSharedFileEnabled bool
-	EtemperatureSharedDir         string
-	EtemperatureSharedFile        string
-
 	// [lorawan]
 	LoraWANEnabled             bool
 	LoraWANSharedDirs          []string
@@ -72,16 +64,6 @@ func (p *Moduleconfig) ReadParameterFromFile() {
 	// [digitalout]
 	p.AllowedDigitalOutUser = strings.Split(mcfg.Section("digitalout").Key("allowed_user").String(), ",")
 
-	//[etemperature]
-	p.AllowedEtemperatureUser = strings.Split(mcfg.Section("etemperature").Key("allowed_user").String(), ",")
-	if p.EtemperatureI2CAddress, err = utils.DecodeUint16(mcfg.Section("etemperature").Key("i2c_address").MustString("0x52")); err != nil {
-		log.Fatal(err)
-	}
-	p.EtemperatureSamplerate = mcfg.Section("etemperature").Key("samplerate").MustInt(6)
-	p.EtemperatureSharedFileEnabled = mcfg.Section("etemperature").Key("shared_file_enabled").MustBool(true)
-	p.EtemperatureSharedDir = mcfg.Section("etemperature").Key("shared_dir").MustString("/var/run")
-	p.EtemperatureSharedFile = mcfg.Section("etemperature").Key("shared_file").MustString("smartpi_etemperature_values")
-
 	//[lorawan]
 	p.LoraWANEnabled = mcfg.Section("lorawan").Key("shared_file_enabled").MustBool(true)
 	p.LoraWANSharedDirs = strings.Split(mcfg.Section("lorawan").Key("shared_files_path").String(), ",")
@@ -114,14 +96,6 @@ func (p *Moduleconfig) SaveParameterToFile() {
 
 	// [digitalout]
 	_, merr = mcfg.Section("digitalout").NewKey("allowed_user", strings.Join(p.AllowedDigitalOutUser, ","))
-
-	//[etemperature]
-	_, merr = mcfg.Section("etemperature").NewKey("allowed_user", strings.Join(p.AllowedEtemperatureUser, ","))
-	_, merr = mcfg.Section("etemperature").NewKey("i2c_address", utils.EncodeUint64(uint64(p.EtemperatureI2CAddress)))
-	_, merr = mcfg.Section("etemperature").NewKey("samplerate", strconv.FormatInt(int64(p.EtemperatureSamplerate), 10))
-	_, merr = mcfg.Section("etemperature").NewKey("shared_file_enabled", strconv.FormatBool(p.EtemperatureSharedFileEnabled))
-	_, merr = mcfg.Section("etemperature").NewKey("shared_dir", p.EtemperatureSharedDir)
-	_, merr = mcfg.Section("etemperature").NewKey("shared_file", p.EtemperatureSharedFile)
 
 	//[lorawan]
 	_, merr = mcfg.Section("lorawan").NewKey("shared_file_enabled", strconv.FormatBool(p.LoraWANEnabled))
