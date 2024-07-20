@@ -14,7 +14,6 @@ require (
 	github.com/msteinert/pam v1.2.0
 	github.com/nDenerserve/RN2483 v0.0.0-20231123165121-2ab5d8f2030a
 	github.com/nDenerserve/go-rpigpio v0.0.0-20160701025123-bce6190607da
-	github.com/nDenerserve/mbserver v0.0.0-20230619125728-ce6fed969ee0
 	github.com/nDenerserve/structs v1.1.0
 	github.com/oleiade/reflections v1.0.1
 	github.com/prometheus/client_golang v1.19.1
