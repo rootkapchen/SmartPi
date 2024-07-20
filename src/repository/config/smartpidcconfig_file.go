@@ -111,12 +111,6 @@ type DCconfig struct {
 	MQTTtopic            string
 	MQTTpublishintervall string
 
-	// [modbus slave]
-	ModbusRTUenabled bool
-	ModbusTCPenabled bool
-	ModbusRTUAddress uint8
-	ModbusRTUDevice  string
-	ModbusTCPAddress string
 }
 
 var dccfg *ini.File
@@ -252,13 +246,6 @@ func (p *DCconfig) ReadDCParameterFromFile() {
 	p.MQTTtopic = dccfg.Section("mqtt").Key("mqtt_topic").String()
 	p.MQTTpublishintervall = dccfg.Section("mqtt").Key("mqtt_publishintervall").MustString("sample")
 
-	// [modbus slave]
-	p.ModbusRTUenabled = dccfg.Section("modbus").Key("modbus_rtu_enabled").MustBool(false)
-	p.ModbusTCPenabled = dccfg.Section("modbus").Key("modbus_tcp_enabled").MustBool(false)
-	p.ModbusRTUAddress = uint8(dccfg.Section("modbus").Key("modbus_rtu_address").MustInt(1))
-	p.ModbusRTUDevice = dccfg.Section("modbus").Key("modbus_rtu_device_id").MustString("/dev/serial0")
-	p.ModbusTCPAddress = dccfg.Section("modbus").Key("modbus_tcp_address").MustString(":502")
-
 }
 
 func (p *DCconfig) SaveDCParameterToFile() {
@@ -363,13 +350,6 @@ func (p *DCconfig) SaveDCParameterToFile() {
 	_, dcerr = dccfg.Section("mqtt").NewKey("mqtt_password", p.MQTTpass)
 	_, dcerr = dccfg.Section("mqtt").NewKey("mqtt_topic", p.MQTTtopic)
 	_, dcerr = dccfg.Section("mqtt").NewKey("mqtt_publishintervall", p.MQTTpublishintervall)
-
-	// [modbus slave]
-	_, dcerr = dccfg.Section("modbus").NewKey("modbus_rtu_enabled", strconv.FormatBool(p.ModbusRTUenabled))
-	_, dcerr = dccfg.Section("modbus").NewKey("modbus_tcp_enabled", strconv.FormatBool(p.ModbusTCPenabled))
-	_, dcerr = dccfg.Section("modbus").NewKey("modbus_rtu_address", strconv.FormatUint(uint64(p.ModbusRTUAddress), 10))
-	_, dcerr = dccfg.Section("modbus").NewKey("modbus_rtu_device_id", p.ModbusRTUDevice)
-	_, dcerr = dccfg.Section("modbus").NewKey("modbus_tcp_address", p.ModbusTCPAddress)
 
 	tmpFile := "/tmp/smartpidc"
 	dcerr := dccfg.SaveTo(tmpFile)
