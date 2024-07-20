@@ -2,9 +2,6 @@ BINARY_READOUT=smartpireadout
 BINARY_SMARTPIDC=smartpidcreadout
 BINARY_SERVER=smartpiserver
 BINARY_FTPUPLOAD=smartpiftpupload
-BINARY_MODBUSSERVER=smartpimodbusserver
-BINARY_EMETERSERVER=smartpiemeterserver
-BINARY_ETEMPERATUREREADOUT=smartpietemperaturereadout
 BINARY_LORAWAN=smartpilorawan
 
 #VERSION=0.3.7
@@ -71,20 +68,10 @@ buildsmartpiftpupload:
 	$(GOBUILD) -o ../bin$(LBITS)/$(BINARY_FTPUPLOAD) -ldflags="-X main.appVersion=${VERSION}" ftpupload/ftpupload.go
 	@echo "building smartpiftpupload done"
 
-buildsmartpimodbusserver:
-	@echo "start building smartpimodbusserver..."
-	$(GOBUILD) -o ../bin$(LBITS)/$(BINARY_MODBUSSERVER) -ldflags="-X main.appVersion=${VERSION}" services/modbus/modbusserver.go
-	@echo "building smartpimodbusserver done"
-
 buildsmartpiemeterserver:
 	@echo "start building smartpiemeterserver..."
 	$(GOBUILD) -o ../bin$(LBITS)/$(BINARY_EMETERSERVER) -ldflags="-X main.appVersion=${VERSION}" services/emeter/emeter.go
 	@echo "building smartpiemeterserver done"
-
-buildsmartpietemperaturereadout:
-	@echo "start building smartpietemperaturereadout..."
-	$(GOBUILD) -o ../bin$(LBITS)/$(BINARY_ETEMPERATUREREADOUT) -ldflags="-X main.appVersion=${VERSION}" modules/etemperature/etemperature.go
-	@echo "building smartpietemperaturereadout done"
 
 buildsmartpielorawan:
 	@echo "start building smartpilorawan..."
