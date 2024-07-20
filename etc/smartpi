@@ -1,14 +1,14 @@
 [base]
 serial="smartpi2302140012345"
-name="House"
+name="myHouse"
 # Valid log levels: panic, error, info, debug
 loglevel=error
 metrics_listen_address=":9246"
 check_smartpirunning = 1
 
 [location]
-lat=52.3667
-lng=9.7167
+lat=49.5
+lng=9.8
 
 [database]
 counter_enabled  = true
@@ -75,20 +75,20 @@ app_key = "ew980723j35h97fqw4!234490#t33465"
 dashboard = "smartpi"
 
 [mqtt]
-mqtt_enabled=0
+mqtt_enabled=1
 mqtt_broker_scheme="tcp://"
 mqtt_broker_url=""
 mqtt_broker_port=""
 mqtt_username=""
 mqtt_password=""
-mqtt_topic=""
+mqtt_topic="SmartPi"
 
-[modbus]
-modbus_rtu_enabled=0
-modbus_tcp_enabled=0
-modbus_rtu_address=1
-modbus_rtu_device_id="/dev/serial0"
-modbus_tcp_address=":502"
+#[modbus]
+# modbus_rtu_enabled=0
+# modbus_tcp_enabled=0
+# modbus_rtu_address=0
+# modbus_rtu_device_id="/dev/serial0"
+# modbus_tcp_address=":502"
 
 
 [calibration]
@@ -110,8 +110,8 @@ gui_max_current_4 = 100
 appkey = `ew980723j35h97fqw4!234490#t33465`
 
 [emeter]
-emeter_enabled           = true
-emeter_multicast_address = 239.12.255.254
-emeter_multicast_port    = 9522
-emeter_susy_id           = 270
-emeter_serial            = 340585213
+emeter_enabled           = false
+# emeter_multicast_address = 
+# emeter_multicast_port    = 
+# emeter_susy_id           = 
+# emeter_serial            = 
